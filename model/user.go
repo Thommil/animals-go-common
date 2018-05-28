@@ -1,5 +1,7 @@
-package user
+package model
 
-func Get() string {
-	return "toto"
+// User model definition
+type User struct {
+	// Id of the user
+	ID string
 }
