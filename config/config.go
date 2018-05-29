@@ -9,7 +9,8 @@ import (
 	"github.com/tkanos/gonfig"
 )
 
-// LoadConfiguration loads from json file to Configuration
+// LoadConfiguration loads from json file to Configuration using predfined path 'config/'
+// at executable level
 func LoadConfiguration(moduleName string, configuration interface{}) error {
 	ex, err := os.Executable()
 	if err != nil {
