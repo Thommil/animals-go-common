@@ -1,6 +1,11 @@
 package model
 
-import "github.com/globalsign/mgo/bson"
+import (
+	"fmt"
+
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
+)
 
 // User model definition
 type User struct {
@@ -8,4 +13,36 @@ type User struct {
 	ID bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	// Username of the user
 	Username string `json:"username" bson:"username"`
+}
+
+// CreateOrUpdateUser from the parameter and returns the created/updated user
+func CreateOrUpdateUser(database *mgo.Database, user *User) (*User, error) {
+	return nil, fmt.Errorf("Not implemented")
+}
+
+// FindUser returns a Mongo Query to parse result, the search query is Mongo based too
+func FindUser(database *mgo.Database, query interface{}) (*mgo.Query, error) {
+	return nil, fmt.Errorf("Not implemented")
+}
+
+// FindUserByID allows to get a single user from her ID
+func FindUserByID(database *mgo.Database, id string) (*User, error) {
+	user := &User{}
+	if bson.IsObjectIdHex(id) {
+		err := database.C("user").FindId(bson.ObjectIdHex(id)).One(user)
+		if err != nil {
+			return nil, err
+		}
+		return user, nil
+	}
+	return nil, fmt.Errorf("Invalid user ID")
+}
+
+// DeleteUserByID allows to delete an existing user from her ID
+func DeleteUserByID(database *mgo.Database, id string) error {
+	if bson.IsObjectIdHex(id) {
+		return database.C("user").RemoveId(bson.ObjectIdHex(id))
+	} else {
+		return fmt.Errorf("Invalid user ID")
+	}
 }
