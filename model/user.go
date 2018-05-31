@@ -12,7 +12,11 @@ type User struct {
 	// ID of the user
 	ID bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	// Username of the user
-	Username string `json:"username" bson:"username"`
+	Username string `json:"username,omitempty" bson:"username,omitempty"`
+	// Picture URL of the user
+	Picture string `json:"picture,omitempty" bson:"picture,omitempty"`
+	// Locale of the user
+	Locale string `json:"locale,omitempty" bson:"locale,omitempty"`
 }
 
 // CreateOrUpdateUser from the parameter and returns the created/updated user
