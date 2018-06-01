@@ -5,6 +5,7 @@ import (
 
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	"github.com/thommil/animals-go-common/dao/mongo"
 )
 
 // Account model definition
@@ -20,15 +21,16 @@ type Account struct {
 }
 
 // CreateOrUpdateAccount from the parameter and returns the created/updated account
-func CreateOrUpdateAccount(database *mgo.Database, account *Account) (*Account, error) {
+func CreateOrUpdateAccount(account *Account) (*Account, error) {
+	var collection = mongo.GetInstance().DB("").C("account")
 	var err error
 	if account.ID != "" {
 		//Update
-		err = database.C("account").UpdateId(account.ID, account)
+		err = collection.UpdateId(account.ID, account)
 	} else {
 		//Create
 		account.ID = bson.NewObjectId()
-		err = database.C("account").Insert(account)
+		err = collection.Insert(account)
 	}
 	if err != nil {
 		return nil, err
@@ -37,15 +39,16 @@ func CreateOrUpdateAccount(database *mgo.Database, account *Account) (*Account, 
 }
 
 // FindAccount returns a Mongo Query to parse result, the search query is Mongo based too
-func FindAccount(database *mgo.Database, query interface{}) *mgo.Query {
-	return database.C("account").Find(query)
+func FindAccount(query interface{}) *mgo.Query {
+	return mongo.GetInstance().DB("").C("account").Find(query)
 }
 
 // FindAccountByID allows to get a single account from its ID
-func FindAccountByID(database *mgo.Database, id string) (*Account, error) {
+func FindAccountByID(id string) (*Account, error) {
+	var collection = mongo.GetInstance().DB("").C("account")
 	account := &Account{}
 	if bson.IsObjectIdHex(id) {
-		err := database.C("account").FindId(bson.ObjectIdHex(id)).One(account)
+		err := collection.FindId(bson.ObjectIdHex(id)).One(account)
 		if err != nil {
 			return nil, err
 		}
@@ -56,14 +59,15 @@ func FindAccountByID(database *mgo.Database, id string) (*Account, error) {
 
 // DeleteAccountByID allows to delete an existing account from its ID
 // Deletes also the linked user
-func DeleteAccountByID(database *mgo.Database, id string) error {
+func DeleteAccountByID(id string) error {
+	var collection = mongo.GetInstance().DB("").C("account")
 	if bson.IsObjectIdHex(id) {
-		account, err := FindAccountByID(database, id)
+		account, err := FindAccountByID(id)
 		if err != nil {
 			return err
 		}
-		DeleteUserByID(database, account.UserID)
-		return database.C("account").RemoveId(bson.ObjectIdHex(id))
+		DeleteUserByID(account.UserID)
+		return collection.RemoveId(bson.ObjectIdHex(id))
 	}
 	return fmt.Errorf("Invalid account ID")
 }
