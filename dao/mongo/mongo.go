@@ -8,7 +8,7 @@ import (
 
 // Configuration definition for MongoDB DAO
 type Configuration struct {
-	URL string
+	URL string `json:"url"`
 }
 
 var instance *mgo.Session
